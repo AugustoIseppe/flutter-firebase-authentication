@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "41950481076",
+    "project_id": "flutter-alura-firebaseauth",
+    "storage_bucket": "flutter-alura-firebaseauth.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41950481076:android:2f8403f9381ed918c865e1",
+        "android_client_info": {
+          "package_name": "com.example.alura_firebase_auth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvHnK1aMYlD7YTfpnrn_WhuUELYLTwsvg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
