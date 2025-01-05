@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:alura_firebase_auth/authentication/services/auth_service.dart';
 import 'package:alura_firebase_auth/components/show_confirm_password.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
@@ -12,20 +15,51 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  AuthService _authService = AuthService();
+  File? _selectedImage;
+
+  Future<void> _pickImage() async {
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
+      // ignore: empty_catches
+    } catch (e) {}
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = widget.user;
     return Scaffold(
       drawer: Drawer(
         child: ListView(
           children: [
             UserAccountsDrawerHeader(
-              currentAccountPicture: const CircleAvatar(
-                child: Icon(Icons.person),
-              ),
-              // ignore: unnecessary_null_comparison
-              accountName: Text((widget.user.displayName! != null)
-                  ? widget.user.displayName!
-                  : ''),
+              currentAccountPicture: _selectedImage != null
+                  ? GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                          radius: 80,
+                          backgroundImage: _selectedImage == null
+                              ? NetworkImage(widget.user.photoURL!)
+                              : null,
+                          child: const Text('')),
+                    )
+                  : GestureDetector(
+                      onTap: _pickImage,
+                      child: const SizedBox(
+                        child: CircleAvatar(
+                            radius: 80,
+                            child: Icon(Icons.person,
+                                size: 40, color: Colors.grey)),
+                      ),
+                    ),
+              accountName:
+                  Text((user.displayName! != null) ? user.displayName! : ''),
               accountEmail: Text(widget.user.email!),
             ),
             ListTile(
@@ -58,6 +92,14 @@ class _HomePageState extends State<HomePage> {
                 AuthService().deslogarUsuario();
               },
             ),
+            ListTile(
+              title: const Text('Alterar imagem'),
+              onTap: () {
+                print(_selectedImage!.path);
+                _authService.atualizarImagemUsuario(
+                    photoURL: _selectedImage!.path);
+              },
+            ),
           ],
         ),
       ),
@@ -69,7 +111,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
         children: [
           const SizedBox(height: 20),
-          const Text('Olá, seja bem-vindo ao app!'),
+          Text('Olá, seja bem-vindo ao app ${user.displayName}!'),
           const SizedBox(height: 20),
           FilledButton(
             onPressed: () {

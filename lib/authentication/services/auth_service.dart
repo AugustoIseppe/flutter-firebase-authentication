@@ -3,6 +3,38 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  Future<String?> cadastrarUsuario({
+    required String email,
+    required String password,
+    required String nome,
+    // required String photoURL,
+  }) async {
+    try {
+      UserCredential userCredential = await _firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await userCredential.user!.updateDisplayName(nome);
+      // await userCredential.user!.updatePhotoURL(photoURL);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'email-already-in-use':
+          return 'O email já está em uso';
+      }
+      return e.code;
+    }
+    return null;
+  }
+
+  //Atualizar imagem do usuário
+  Future<String?> atualizarImagemUsuario({required String photoURL}) async {
+    try {
+      await _firebaseAuth.currentUser!.updatePhotoURL(photoURL);
+      print('Imagem atualizada com sucesso');
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    }
+    return null;
+  }
+
   Future<String?> logarUsuario(
       {required String email, required String password}) async {
     try {
@@ -14,24 +46,6 @@ class AuthService {
           return 'Usuário não encontrado';
         case 'invalid-credential':
           return 'E-mail ou senha inválidos';
-      }
-      return e.code;
-    }
-    return null;
-  }
-
-  Future<String?> cadastrarUsuario(
-      {required String email,
-      required String password,
-      required String nome}) async {
-    try {
-      UserCredential userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      await userCredential.user!.updateDisplayName(nome);
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'email-already-in-use':
-          return 'O email já está em uso';
       }
       return e.code;
     }
